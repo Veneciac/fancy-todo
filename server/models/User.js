@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema 
+const genPass = require('../helper').genPass
 
 function CheckUnique() {
     return new Promise((res, rej) =>{
@@ -39,6 +40,7 @@ const userSchema = new Schema({
 })
 
 userSchema.pre('save' , function(next) {
+    this.password = genPass(this.password)
     next()
 })
 
