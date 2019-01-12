@@ -1,8 +1,9 @@
 const User = require('../models/User')
 const ObjId = require('mongoose').Types.ObjectId
-const mongoose = require('mongoose')
 const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client(process.env.CLIENT_ID);
+const jwt = require('jsonwebtoken')
+const compare = require('../helper').compare
 
 class UserController {
     static signIn (req, res) {
@@ -14,6 +15,34 @@ class UserController {
             const payload = ticket.getPayload();
             const userid = payload['sub'];
 
+            User.findOne({email: payload.email})
+                .then(found => {
+                    if (!found) {
+                        return  User.create({
+                            name: payload.name,
+                            email: payload.email,
+                            google: true
+                        })
+                    } else {
+                        res.status(200).json({
+                            msg: `Success login`,
+                            token: jwt.sign({ id: found._id }, process.env.JWT)
+                        })
+                    }
+                })
+                .then(created => {
+                    res.status(201).json({
+                        msg: `Success created user and login`,
+                        token: jwt.sign({ id: created._id }, process.env.JWT)
+                    })
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        msg: `Internal server error`,
+                        error: err.message
+                    })
+                })
+
         })
         .catch(err => {
             res.status(500).json({
@@ -21,6 +50,34 @@ class UserController {
                 error: err.message
             })
         })
+    }
+
+    static logIn (req, res) {
+        User.findOne({email: req.body.email})
+            .then(found => {
+                if (!found) {
+                    res.status(404).json({
+                        msg: `User not found`
+                    })
+                } else {
+                    if (!compare(req.body.password, found.password)) {
+                        res.status(400).json({
+                            msg: `Wrong password`
+                        })
+                    } else {
+                        res.status(200).json({
+                            msg: `Success login`,
+                            token: jwt.sign({id: found._id}, process.env.JWT)
+                        })
+                    }
+                }
+            })
+            .catch(err => {
+                res.status(500).json({
+                    msg: `Internal server error`,
+                    error: err.message
+                })
+            })
     }
 
     static create (req, res) {
