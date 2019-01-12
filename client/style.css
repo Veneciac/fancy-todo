@@ -1,0 +1,41 @@
+.card-list {
+    display: block;
+    width: 100%;
+  }
+  
+.card {
+border: 1px solid black;
+float: left;
+margin: 5px;
+padding: 10px 3px;
+/*setting width for each and every card element as well as -10px for removing the margin width for 5 elements*/
+width: calc( 100% / 5 - 10px);
+}
+
+  
+  /*first element*/
+  
+  .card-list .card:first-child {
+    margin-left: 5px;
+  }
+  
+  
+  /*last element of the first row*/
+  
+  .card-list.card:nth-child(5n) {
+    margin-right: 0;
+  }
+  
+  
+  /*first-element of the 2nd row*/
+  
+  .card-list.card:nth-child(5n+1) {
+    margin-left: 0;
+  }
+  
+  
+  /*last element*/
+  
+  .card-list.card:last-child {
+    margin-right: 0;
+  }
