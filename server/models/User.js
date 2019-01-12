@@ -7,6 +7,7 @@ function CheckUnique() {
         User.findOne({email: this.email, _id: {$ne: this._id}})
             .then(data => {
                 if(data) {
+                    console.log(`masuk validatsi`)
                     res(false)
                 } else {
                     res(true)
@@ -20,8 +21,7 @@ function CheckUnique() {
 
 const userSchema = new Schema({
     name: {
-        type: String,
-        required: [true, 'Name must be filled']
+        type: String
       },
     email: {
         type: String,
@@ -30,8 +30,7 @@ const userSchema = new Schema({
         validate: [CheckUnique, 'Email already taken']
       }, 
     password: {
-        type: String,
-        minlength: [6, `Minimal password length is 6`]
+        type: String
       },
     google: {
         type: Boolean,
@@ -40,8 +39,13 @@ const userSchema = new Schema({
 })
 
 userSchema.pre('save' , function(next) {
-    this.password = genPass(this.password)
-    next()
+    if (this.password) {
+        this.password = genPass(this.password)
+        next()
+
+    } else {
+        next()
+    }
 })
 
 const User = mongoose.model('User', userSchema)

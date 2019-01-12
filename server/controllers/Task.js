@@ -4,7 +4,12 @@ const mongoose = require('mongoose')
 
 class TaskController { 
     static findAll (req, res) {
-        Task.find({})
+        let q = {}
+        if (req.headers.type == 'me') {
+            q = {userId: ObjId(req.currentUser)}
+        }
+
+        Task.find(q)
             .then(list => {
                 if (req.query.search) {
                     let query = req.query.search.toLowerCase()
@@ -58,7 +63,7 @@ class TaskController {
     static create (req, res) {
         let task = req.body.task
         let description = req.body.description
-        let userId = req.body.userId
+        let userId = req.currentUser
         let dueDate = new Date(req.body.dueDate) 
 
         if (!task || !description || !userId) {
@@ -155,7 +160,13 @@ class TaskController {
                             msg: `Task not found`
                         })
                     } else {
-                        return found.remove()
+                        if (found.userId == req.currentUser) {
+                            return found.remove()
+                        } else {
+                            res.status(403).json({
+                                msg: `You are not authorized `
+                            }) 
+                        }
                     }
                 })
                 .then(del => {
