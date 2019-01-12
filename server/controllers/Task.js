@@ -75,7 +75,8 @@ class TaskController {
                 let newTask = {
                     task,
                     description,
-                    userId
+                    userId,
+                    dueDate
                 }
                 Task.create(newTask)
                     .then(created => {
@@ -103,7 +104,7 @@ class TaskController {
         let task = req.body.task
         let description = req.body.description
         let status = req.body.status
-        let dueDate = req.body.dueDate
+        let dueDate = new Date(req.body.dueDate)
 
         let upTask = {
             task,
@@ -111,6 +112,7 @@ class TaskController {
             status,
             dueDate
         }
+        console.log(upTask)
 
         for (let i in upTask) {
             if (!upTask[i]) delete upTask[i]

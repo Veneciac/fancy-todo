@@ -1,6 +1,27 @@
 $(document).ready(
     isLogin()
 )
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1
+var yyyy = today.getFullYear();
+
+if(dd < 10){
+    dd ='0'+ dd
+} 
+if(mm < 10){
+    mm ='0'+ mm
+} 
+
+today = yyyy+'-'+mm+'-'+dd;
+
+document.getElementById("taskDate").setAttribute("min", today);
+document.getElementById("taskDate").setAttribute("value", today);
+
+document.getElementById("taskDateEdit").setAttribute("min", today);
+document.getElementById("taskDateEdit").setAttribute("value", today);
+
+let taskList = null
 
 function onSignIn(googleUser) {
     var id_token = googleUser.getAuthResponse().id_token;
@@ -16,6 +37,7 @@ function onSignIn(googleUser) {
         $('#body').show()
         getAllTask()
         $('#form').modal('hide');
+        $('#notif').empty()
     })
     .fail(err => {
         $('#notif').empty()
@@ -42,6 +64,7 @@ function signOut() {
             keyboard: false
         }, 'show')
         $('.card-list').empty()
+        $('#notif').empty()
     });
 }
 
@@ -52,10 +75,11 @@ function isLogin() {
             backdrop: 'static',
             keyboard: false
         }, 'show')
-
+        
     } else {
         $('#body').show()
         $('#form').modal('hide');
+        $('#notif').empty()
         getAllTask()
     }
 }
@@ -98,7 +122,7 @@ $('#formaddTask').submit(e => {
         data: {
             task: $('#taskName').val(),
             description: $('#taskDesc').val(),
-
+            dueDate: $('#taskDate').val()
         },
         headers: {
             token: localStorage.token
@@ -141,6 +165,7 @@ function getAllTask() {
         }
     })
     .done(response => {
+        taskList = response.data
         displayTask(response.data)
     })
     .fail(err => {
@@ -228,32 +253,40 @@ function displayTask(list) {
     list.forEach(e => {
         $('.card-list').append(
             `
-            <div class="card text-white bg-dark mb-3" style="max-width: 20rem;">
+            <div id="card${e._id}" class="card text-white bg-primary mb-3" style="max-width: 20rem;">
                     <div class="card-header" >
+                    <div id="taskStatus${e._id}" ></div>
                         <form id="deleteTask${e._id}" >
-                            <button onclick="delTask('${e._id}')" type="submit" class="close" >
+                            <button onclick="delTask('${e._id}')" type="submit" class="close float-right" >
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </form>
-                        <div id="taskStatus${e._id}" ></div>
-                    </div>
+                        </div>
                     <div class="card-body">
-                        <h4  onclick="setTask('${e._id}')" data-toggle="modal" data-target="#editTaskModal" style="cursor: pointer;" class="card-title">${e.task}</h4>
+                        <h4 class="card-title">${e.task}</h4>
+                        <small class="text-muted">  ${new Date(e.dueDate).toDateString()}</small>
+                        <span onclick="setTask('${e._id}')" data-toggle="modal" data-target="#editTaskModal" style="cursor: pointer;" class="badge badge-pill badge-secondary">edit</span>
                         <p class="card-text">${e.description}</p>
                     </div>
             </div>
             `
         )
         if (e.status == false) {
-            $(`#taskStatus${e._id}`).append(`<span class="badge badge-pill badge-danger"><i style='font-size:24px' class='fas'>&#xf068;</i></span>`)
+            $(`#taskStatus${e._id}`).append(`<span class="float-left badge badge-pill badge-danger ">!</span>`)
         } else {
-            $(`#taskStatus${e._id}`).append(`<span class="badge badge-pill badge-info"><i style='font-size:24px' class='fas'>&#xf00c;</i></span>`)
+            $(`#taskStatus${e._id}`).append(`<span class="float-left badge badge-pill badge-info">done</span>`)
+        }
+        if (e.dueDate) {
+            if (new Date(e.dueDate) <= new Date()) {
+                document.getElementById(`card${e._id}`).setAttribute('class', `card  bg-secondary mb-3`)
+            }
         }
         
     })
 }
 
 function setTask(id) {
+    $('#notif').empty()
     $.ajax({
             type: 'get',
             url: `http://localhost:3000/tasks/${id}`,
@@ -270,7 +303,8 @@ function setTask(id) {
                 let data = {
                     task: $('#taskNameEdit').val(),
                     description: $('#taskDescEdit').val(),
-                    status: $('#taskStatusEdit').val()
+                    status: $('#taskStatusEdit').val(),
+                    dueDate: $('#taskDateEdit').val()
                 }
 
                 $.ajax({
@@ -322,4 +356,17 @@ function setTask(id) {
             console.error(err)
         })
   
+}
+
+$('.testNotif').click(e => {
+    e.preventDefault()
+    $('#notif').empty()
+
+})
+
+function sort() {
+    taskList.sort(function(a, b){
+        return new Date(a.dueDate) - new Date(b.dueDate);
+    });
+    displayTask(taskList)
 }
