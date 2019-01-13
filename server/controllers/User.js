@@ -56,7 +56,7 @@ class UserController {
         })
     }
 
-    static regis (req, res) {
+    static login (req, res) {
         if (!req.body.email || !req.body.password) {
             res.status(400).json({
                 msg: `Please input all data!`
@@ -76,18 +76,37 @@ class UserController {
                             })
                         }
                     } else {
-                        let newUser = {
-                            email: req.body.email,
-                            password: req.body.password,
-                            google: false
-                        }
-                        return User.create(newUser)
+                      res.status(404).json({
+                          msg: `Please register first`
+                      })
                     }
                 })
-                .then(created => {
+                .catch(err => {
+                    res.status(500).json({
+                        msg: `Internal server error`,
+                        error: err.message
+                    })
+                })
+        }
+    }
+
+    static create (req, res) {
+        if ( !req.body.email || !req.body.password) {
+            res.status(400).json({
+                msg: `Please input all data!`
+            })
+        } else {
+            let newUser = {
+                email: req.body.email,
+                password: req.body.password,
+                google: false
+            }
+            User.create(newUser)
+                .then(user => {
                     res.status(201).json({
-                        msg: `Success registration and sign in`,
-                        token: jwt.sign({id: created._id}, process.env.JWT)
+                        msg: `Success create User`,
+                        data: user,
+                        token: jwt.sign({id: user._id}, process.env.JWT)
                     })
                 })
                 .catch(err => {
