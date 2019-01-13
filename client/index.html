@@ -61,7 +61,17 @@
                 <form id="searchTodo" class="form-inline my-2 my-lg-0">
                     <input class="form-control mr-sm-2" type="text" placeholder="Search" id="searchInput">
                 </form>
-                <button onclick="sort()" class="btn btn-secondary my-2 my-sm-0 ml-1" type="button" >Sort</button>
+                <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                    <div class="btn-group " role="group">
+                      <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                      <div class="dropdown-menu" aria-labelledby="btnGroupDrop1" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 48px, 0px);">
+                        <button onclick="getAllTask()" class="btn btn-secondary my-2 my-sm-0 ml-1" type="button" >Original</button>
+                        <button onclick="sort()" class="btn btn-secondary my-2 my-sm-0 ml-1" type="button" >Sort</button>
+                        <button onclick="todayTask()" class="btn btn-secondary my-2 my-sm-0 ml-1" type="button" >Today Task</button>
+                        <button onclick="read()" class="btn btn-secondary my-2 my-sm-0 ml-1" type="button" >read</button>
+                      </div>
+                    </div>
+                </div>
                 <button class="btn btn-secondary my-2 my-sm-0 ml-1" type="button" onclick="signOut();">Sign out</button>
             </div>
         </nav>
@@ -145,7 +155,6 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Tooltip on top">
 
         <!-- Card list -->
         <div class="card-list">

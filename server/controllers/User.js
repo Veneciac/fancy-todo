@@ -56,34 +56,6 @@ class UserController {
         })
     }
 
-    // static logIn (req, res) {
-    //     User.findOne({email: req.body.email})
-    //         .then(found => {
-    //             if (!found) {
-    //                 res.status(404).json({
-    //                     msg: `User not found`
-    //                 })
-    //             } else {
-    //                 if (!compare(req.body.password, found.password)) {
-    //                     res.status(400).json({
-    //                         msg: `Wrong password`
-    //                     })
-    //                 } else {
-    //                     res.status(200).json({
-    //                         msg: `Success login`,
-    //                         token: jwt.sign({id: found._id}, process.env.JWT)
-    //                     })
-    //                 }
-    //             }
-    //         })
-    //         .catch(err => {
-    //             res.status(500).json({
-    //                 msg: `Internal server error`,
-    //                 error: err.message
-    //             })
-    //         })
-    // }
-
     static regis (req, res) {
         if (!req.body.email || !req.body.password) {
             res.status(400).json({
@@ -127,32 +99,6 @@ class UserController {
         }
     }
 
-    // static create (req, res) {
-    //     if ( !req.body.email || !req.body.password) {
-    //         res.status(400).json({
-    //             msg: `Please input all data!`
-    //         })
-    //     } else {
-    //         let newUser = {
-    //             email: req.body.email,
-    //             password: req.body.password,
-    //             google: false
-    //         }
-    //         User.create(newUser)
-    //             .then(user => {
-    //                 res.status(201).json({
-    //                     msg: `Success create User`,
-    //                     data: user
-    //                 })
-    //             })
-    //             .catch(err => {
-    //                 res.status(500).json({
-    //                     msg: `Internal server error`,
-    //                     error: err.message
-    //                 })
-    //             })
-    //     }
-    // }
 
     static update (req, res) {
         let dataUser = {

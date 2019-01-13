@@ -21,7 +21,9 @@ document.getElementById("taskDate").setAttribute("value", today);
 document.getElementById("taskDateEdit").setAttribute("min", today);
 document.getElementById("taskDateEdit").setAttribute("value", today);
 
+let todayList = null
 let taskList = null
+let currentList = null
 
 function onSignIn(googleUser) {
     var id_token = googleUser.getAuthResponse().id_token;
@@ -166,6 +168,7 @@ function getAllTask() {
     })
     .done(response => {
         taskList = response.data
+        currentList = response.data
         displayTask(response.data)
     })
     .fail(err => {
@@ -247,13 +250,12 @@ function delTask(id) {
     })
 }
 
-
 function displayTask(list) {
     $('.card-list').empty()
     list.forEach(e => {
         $('.card-list').append(
             `
-            <div id="card${e._id}" class="card text-white bg-primary mb-3" style="max-width: 20rem;">
+            <div id="card${e._id}" class="text-left card text-white bg-primary mb-3" style="max-width: 20rem;">
                     <div class="card-header" >
                     <div id="taskStatus${e._id}" ></div>
                         <form id="deleteTask${e._id}" >
@@ -265,7 +267,7 @@ function displayTask(list) {
                     <div class="card-body">
                         <h4 class="card-title">${e.task}</h4>
                         <small class="text-muted">  ${new Date(e.dueDate).toDateString()}</small>
-                        <span onclick="setTask('${e._id}')" data-toggle="modal" data-target="#editTaskModal" style="cursor: pointer;" class="badge badge-pill badge-secondary">edit</span>
+                        <span onclick="setTask('${e._id}')" data-toggle="modal" data-target="#editTaskModal" style="cursor: pointer;" class="float-right badge badge-pill badge-secondary">edit</span>
                         <p class="card-text">${e.description}</p>
                     </div>
             </div>
@@ -278,7 +280,7 @@ function displayTask(list) {
         }
         if (e.dueDate) {
             if (new Date(e.dueDate) <= new Date()) {
-                document.getElementById(`card${e._id}`).setAttribute('class', `card  bg-secondary mb-3`)
+                document.getElementById(`card${e._id}`).setAttribute('class', `text-left card bg-secondary mb-3`)
             }
         }
         
@@ -365,8 +367,47 @@ $('.testNotif').click(e => {
 })
 
 function sort() {
+    $('#notif').empty()
     taskList.sort(function(a, b){
         return new Date(a.dueDate) - new Date(b.dueDate);
     });
+    currentList = taskList
     displayTask(taskList)
+}
+
+function todayTask() {
+    $('#notif').empty()
+    todayList = taskList.filter(task => new Date(task.dueDate).getDate() == today.slice(8, 10))
+    currentList = todayList
+    displayTask(todayList)
+
+}
+
+function read() {
+    let getTaskName = currentList.map((e,i) => (i+1) + '.' + ' ' + e.task)
+
+    $.ajax({
+        type: `get`,
+        url: `http://localhost:3000/speech`, 
+        headers: {
+            text: getTaskName,
+            token: localStorage.token
+        }
+    })
+    .done(response => {
+        let audio = new Audio(response.data)
+        audio.play()
+    })
+    .catch(err => {
+        $('#notif').empty()
+        $('#notif').append(
+            `
+            <div class="alert alert-dismissible alert-danger">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <strong>Oh snap!</strong> Something went wrong 
+            </div>
+            `
+        )
+        console.error(err)
+    })
 }

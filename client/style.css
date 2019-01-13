@@ -4,11 +4,11 @@
   }
   
 .card {
-float: left;
-margin: 5px;
-padding: 10px 3px;
-/*setting width for each and every card element as well as -10px for removing the margin width for 5 elements*/
-width: calc( 100% / 5 - 10px);
+  float: left;
+  margin: 5px;
+  margin-bottom: 1px;
+  padding: 10px 3px;
+  width: calc( 100% / 5 - 10px);
 }
 
   
