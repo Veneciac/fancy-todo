@@ -21,16 +21,14 @@ class UserController {
                 
                 User.findOne({email: payload.email})
                     .then(found => {
-                        // console.log(found)
-                        // console.log(`masuk found`) 
                         if (found) {
-                            // console.log(`old user`)
                             res.status(200).json({
                                 msg: `Success sign old user`,
                                 token: jwt.sign({id: found._id}, process.env.JWT)
                             })
                         } else {
                             let newUSer = {
+                                name: payload.name,
                                 email: payload.email,
                                 google: true
                             }
@@ -38,8 +36,6 @@ class UserController {
                         }
                     })
                     .then(created => {
-                        // console.log(`masuk the user baru`)
-                        // console.log(created) knp masuk sini
                         res.status(201).json({
                             msg: `Success sign in and create user`,
                             token: jwt.sign({id: created._id}, process.env.JWT)
@@ -76,10 +72,18 @@ class UserController {
                             })
                         }
                     } else {
-                      res.status(404).json({
-                          msg: `Please register first`
-                      })
+                        return User.create({email: req.body.email, password: req.body.password, google: false })
+                    //   res.status(404).json({
+                    //       msg: `Please register first`
+                    //   })
                     }
+                })
+                .then(user => {
+                    res.status(201).json({
+                        msg: `Success create User`,
+                        data: user,
+                        token: jwt.sign({id: user._id}, process.env.JWT)
+                    })
                 })
                 .catch(err => {
                     res.status(500).json({
@@ -97,6 +101,7 @@ class UserController {
             })
         } else {
             let newUser = {
+                name: req.body.name,
                 email: req.body.email,
                 password: req.body.password,
                 google: false

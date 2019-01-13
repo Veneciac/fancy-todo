@@ -103,6 +103,86 @@ $('#formRegis').submit(e => {
         getAllTask()  
     })
     .fail(err => {
+        if (err.responseJSON.msg == `Please register first`) {
+            $('#notifRegis').append(`
+                <div class="alert alert-dismissible alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Please register first!</strong> 
+                </div>
+            `)
+        } else {
+            $('#notifRegis').empty()
+            $('#notifRegis').append(
+                `
+                <div class="alert alert-dismissible alert-danger">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Oh snap!</strong> ${err.responseJSON.msg}
+                </div>
+                `
+            )
+            console.error(err)
+        }
+    })
+})
+
+function register() {
+    // $('#form').empty()
+    // $('#form').replaceWith(
+    //     `
+    //     <div class="modal-dialog" role="document">
+    //         <div class="modal-content">
+    //         <div class="modal-header">
+    //             <h5 class="modal-title">Welcome</h5>
+    //         </div>
+    //             <div class="modal-body">
+    //             <div id="notifRegis"></div>
+    //                 <form id="formCreate">
+    //                     <fieldset>
+    //                         <div class="form-group">
+    //                             <label >Name</label>
+    //                             <input required type="text" class="form-control" id="nameCreate" placeholder="Enter name">
+    //                         </div>
+    //                         <div class="form-group">
+    //                             <label >Email address</label>
+    //                             <input required type="email" class="form-control" id="emailCreate" aria-describedby="emailHelp" placeholder="Enter email">
+    //                             <small class="form-text text-muted">We'll never share your email with anyone else.</small>
+    //                         </div>
+    //                         <div class="form-group">
+    //                             <label >Password</label>
+    //                             <input required type="password" class="form-control" id="passwordCreate" placeholder="Password">
+    //                         </div>
+    //                     </fieldset>
+    //             </div>
+    //             <div class="modal-footer">
+    //                     <button type="submit" class="btn btn-primary">Register</button>
+    //                     <button type="button" class="btn btn-link"><div class="g-signin2" data-onsuccess="onSignIn"></div></button> 
+    //                 </form>
+    //             </div>
+    //         </div>
+    //     </div>
+    //     `
+    // )
+
+}
+$('#formCreate').submit(e => {
+    console.log(`masuk regus`)
+    e.preventDefault()
+    $.ajax({
+        type: 'post',
+        url: `http://localhost:3000/users`,
+        data: {
+            email: $('#emailCreate').val(),
+            password: $('#passwordCreate').val(),
+            name: $('#nameCreate').val()
+        }
+    })
+    .done(response => {
+        localStorage.setItem('token', response.token)
+        $('#body').show()
+        $('#form').modal('hide');     
+        getAllTask() 
+    })
+    .catch(err => {
         $('#notifRegis').empty()
         $('#notifRegis').append(
             `
