@@ -90,7 +90,7 @@ $('#formRegis').submit(e => {
     e.preventDefault()
     $.ajax({
         type: 'post',
-        url: `http://localhost:3000/users`,
+        url: `http://localhost:3000/users` ,
         data: {
             email: $('#email').val(),
             password: $('#password').val()
