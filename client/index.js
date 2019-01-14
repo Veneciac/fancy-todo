@@ -77,7 +77,6 @@ function isLogin() {
             backdrop: 'static',
             keyboard: false
         }, 'show')
-        
     } else {
         $('#body').show()
         $('#form').modal('hide');
@@ -90,7 +89,7 @@ $('#formRegis').submit(e => {
     e.preventDefault()
     $.ajax({
         type: 'post',
-        url: `http://localhost:3000/users` ,
+        url: `http://localhost:3000/users/login` ,
         data: {
             email: $('#email').val(),
             password: $('#password').val()
@@ -125,7 +124,7 @@ $('#formRegis').submit(e => {
     })
 })
 
-function register() {
+// function register() {
     // $('#form').empty()
     // $('#form').replaceWith(
     //     `
@@ -163,9 +162,10 @@ function register() {
     //     `
     // )
 
-}
+// }
+
 $('#formCreate').submit(e => {
-    console.log(`masuk regus`)
+    console.log(`masuk regis`)
     e.preventDefault()
     $.ajax({
         type: 'post',
@@ -180,6 +180,8 @@ $('#formCreate').submit(e => {
         localStorage.setItem('token', response.token)
         $('#body').show()
         $('#form').modal('hide');     
+        $('#form2').modal('hide');     
+
         getAllTask() 
     })
     .catch(err => {

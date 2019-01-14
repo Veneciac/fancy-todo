@@ -72,19 +72,19 @@ class UserController {
                             })
                         }
                     } else {
-                        return User.create({email: req.body.email, password: req.body.password, google: false })
-                    //   res.status(404).json({
-                    //       msg: `Please register first`
-                    //   })
+                        // return User.create({email: req.body.email, password: req.body.password, google: false })
+                      res.status(404).json({
+                          msg: `Please register first`
+                      })
                     }
                 })
-                .then(user => {
-                    res.status(201).json({
-                        msg: `Success create User`,
-                        data: user,
-                        token: jwt.sign({id: user._id}, process.env.JWT)
-                    })
-                })
+                // .then(user => {
+                //     res.status(201).json({
+                //         msg: `Success create User`,
+                //         data: user,
+                //         token: jwt.sign({id: user._id}, process.env.JWT)
+                //     })
+                // })
                 .catch(err => {
                     res.status(500).json({
                         msg: `Internal server error`,
